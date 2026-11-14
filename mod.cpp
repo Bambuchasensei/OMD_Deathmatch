@@ -1,0 +1,11 @@
+name = "OMD Deathmatch";
+picture = "";
+logoSmall = "";
+logo = "";
+logoOver = "";
+tooltip = "OMD Deathmatch";
+overview = "Hardcore immersive deathmatch. Client UI and RPC receive come later.";
+action = "";
+author = "OMD";
+authorID = "0";
+version = "0.1.0";
