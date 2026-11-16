@@ -256,6 +256,7 @@ modded class MissionGameplay
 				if (!OMD_DM_BoardClient.s_InMatch)
 				{
 					OpenBoard();
+					m_OMD_DM_BoardWait = 0;
 				}
 			}
 		}
