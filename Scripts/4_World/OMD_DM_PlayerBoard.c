@@ -13,6 +13,12 @@ modded class PlayerBase
 			return;
 		}
 
+		if (rpc_type == OMD_DM_Rpc.PHASE)
+		{
+			OMD_DM_BoardClient.ReadPhase(ctx);
+			return;
+		}
+
 		if (rpc_type == OMD_DM_Rpc.BOARD_LIVE)
 		{
 			OMD_DM_BoardClient.Read(ctx, false);

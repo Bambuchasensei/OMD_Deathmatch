@@ -11,10 +11,12 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 	protected ref OMD_DM_BoardLines m_Top;
 	protected ref OMD_DM_BoardLines m_List;
 	protected bool m_Excluded;
+	protected bool m_Focus;
 
 	void OMD_DM_BoardMenu()
 	{
 		m_Excluded = false;
+		m_Focus = false;
 	}
 
 	override Widget Init()
@@ -75,9 +77,9 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 			return;
 		}
 
-		ui.ShowUICursor(true);
 		GetGame().GetMission().AddActiveInputExcludes({"menu"});
 		m_Excluded = true;
+		KeepCursor();
 	}
 
 	override void OnHide()
@@ -86,10 +88,35 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 		super.OnHide();
 	}
 
+	override void Update(float timeslice)
+	{
+		super.Update(timeslice);
+		KeepCursor();
+	}
+
+	override bool IsHandlingPlayerDeathEvent()
+	{
+		return false;
+	}
+
 	override void OnPlayerDeath()
 	{
-		DropExcludes();
-		super.OnPlayerDeath();
+	}
+
+	override bool OnKeyDown(Widget w, int x, int y, int key)
+	{
+		if (key == KeyCode.KC_ESCAPE)
+		{
+			OMD_DM_Ui.s_Esc = true;
+			return true;
+		}
+
+		if (key == KeyCode.KC_TAB)
+		{
+			return true;
+		}
+
+		return super.OnKeyDown(w, x, y, key);
 	}
 
 	void Shutdown()
@@ -123,6 +150,7 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 		super.OnClick(w, x, y, button);
 		if (Hits(m_CloseButton, w))
 		{
+			OMD_DM_Ui.Log("close", "board", "x");
 			Shutdown();
 			return true;
 		}
@@ -143,8 +171,10 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 			return;
 		}
 
-		OMD_DM_VoteClient.s_UserClosed = false;
-		OMD_DM_VoteClient.s_ForceOpen = true;
+		OMD_DM_VoteClient.s_Dismissed = false;
+		OMD_DM_VoteClient.s_WantAuto = false;
+		OMD_DM_VoteClient.s_SwitchVote = true;
+		OMD_DM_Ui.Log("close", "board", "key");
 		Shutdown();
 	}
 
@@ -219,9 +249,15 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 			return;
 		}
 
-		if (GetGame().GetUIManager())
+		if (m_Focus)
 		{
-			GetGame().GetUIManager().ShowUICursor(false);
+			if (GetGame().GetInput())
+			{
+				GetGame().GetInput().ChangeGameFocus(-1, INPUT_DEVICE_MOUSE);
+				GetGame().GetInput().ChangeGameFocus(-1, INPUT_DEVICE_KEYBOARD);
+			}
+
+			m_Focus = false;
 		}
 
 		mission = GetGame().GetMission();
@@ -231,6 +267,44 @@ class OMD_DM_BoardMenu extends UIScriptedMenu
 		}
 
 		mission.RemoveActiveInputExcludes({"menu"}, true);
+	}
+
+	protected void KeepCursor()
+	{
+		UIManager ui;
+
+		if (!m_Excluded)
+		{
+			return;
+		}
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		ui = GetGame().GetUIManager();
+		if (!ui)
+		{
+			return;
+		}
+
+		if (ui.IsCursorVisible())
+		{
+			return;
+		}
+
+		if (!m_Focus)
+		{
+			if (GetGame().GetInput())
+			{
+				GetGame().GetInput().ChangeGameFocus(1, INPUT_DEVICE_MOUSE);
+				GetGame().GetInput().ChangeGameFocus(1, INPUT_DEVICE_KEYBOARD);
+				m_Focus = true;
+			}
+		}
+
+		ui.ShowUICursor(true);
 	}
 };
 #endif

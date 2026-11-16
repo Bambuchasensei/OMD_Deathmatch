@@ -7,7 +7,38 @@ class OMD_DM_Rpc
 	static const int BOARD_REQ = 77821015;
 	static const int BOARD_LIVE = 77821016;
 	static const int BOARD_FINAL = 77821017;
+	static const int PHASE = 77821018;
 	static const int BOARD_MAX = 64;
+};
+
+class OMD_DM_Ui
+{
+	static bool s_Esc;
+
+	static void Reset()
+	{
+		s_Esc = false;
+	}
+
+	static void Log(string action, string menuName, string reason)
+	{
+		if (!OMD_DM_BoardClient.LogOn())
+		{
+			return;
+		}
+
+		Print("[OMD_DM][UI] " + action + " menu=" + menuName + " reason=" + reason);
+	}
+
+	static void LogToggle(string keyName)
+	{
+		if (!OMD_DM_BoardClient.LogOn())
+		{
+			return;
+		}
+
+		Print("[OMD_DM][UI] toggle key=" + keyName);
+	}
 };
 
 class OMD_DM_VoteOption
@@ -21,10 +52,11 @@ class OMD_DM_VoteOption
 class OMD_DM_VoteClient
 {
 	static bool s_Active;
-	static bool s_ForceOpen;
+	static bool s_SwitchVote;
+	static bool s_WantAuto;
+	static bool s_Dismissed;
 	static bool s_Refresh;
 	static bool s_Close;
-	static bool s_UserClosed;
 	static int s_Seconds;
 	static int s_MyArena;
 	static string s_MyLevel;
@@ -37,10 +69,11 @@ class OMD_DM_VoteClient
 	static void Reset()
 	{
 		s_Active = false;
-		s_ForceOpen = false;
+		s_SwitchVote = false;
+		s_WantAuto = false;
+		s_Dismissed = false;
 		s_Refresh = false;
 		s_Close = false;
-		s_UserClosed = false;
 		s_Seconds = 0;
 		s_MyArena = 0;
 		s_MyLevel = "";
@@ -77,6 +110,7 @@ class OMD_DM_VoteClient
 		string title;
 		string myLevel;
 		bool debugOn;
+		bool wasActive;
 		array<ref OMD_DM_VoteOption> arenas;
 		array<ref OMD_DM_VoteOption> levels;
 		OMD_DM_VoteOption option;
@@ -185,6 +219,7 @@ class OMD_DM_VoteClient
 		}
 
 		Ensure();
+		wasActive = s_Active;
 		s_Seconds = seconds;
 		s_Arenas = arenas;
 		s_Levels = levels;
@@ -194,12 +229,21 @@ class OMD_DM_VoteClient
 		s_Refresh = true;
 		s_Active = true;
 		s_Close = false;
+		if (!OMD_DM_BoardClient.s_InMatch)
+		{
+			OMD_DM_BoardClient.s_PhaseKnown = true;
+		}
+
 		if (opening)
 		{
-			s_ForceOpen = true;
-			s_UserClosed = false;
-			s_PendingArena = 0;
-			s_PendingLevel = "";
+			if (!wasActive)
+			{
+				s_PendingArena = 0;
+				s_PendingLevel = "";
+				s_Dismissed = false;
+				s_WantAuto = true;
+			}
+
 			if (s_Debug)
 			{
 				Print("[OMD_DM][VOTE] rpc open sec=" + seconds.ToString());
@@ -237,9 +281,10 @@ class OMD_DM_VoteClient
 		}
 
 		s_Active = false;
-		s_ForceOpen = false;
+		s_SwitchVote = false;
+		s_WantAuto = false;
+		s_Dismissed = false;
 		s_Refresh = false;
-		s_UserClosed = false;
 		s_Close = true;
 		s_PendingArena = 0;
 		s_PendingLevel = "";
@@ -261,8 +306,10 @@ class OMD_DM_BoardRow
 class OMD_DM_BoardClient
 {
 	static bool s_InMatch;
+	static bool s_PhaseKnown;
 	static bool s_HasFinal;
 	static bool s_OpenFinal;
+	static bool s_SwitchBoard;
 	static bool s_CloseMenu;
 	static bool s_Refresh;
 	static bool s_Debug;
@@ -271,12 +318,59 @@ class OMD_DM_BoardClient
 	static void Reset()
 	{
 		s_InMatch = false;
+		s_PhaseKnown = false;
 		s_HasFinal = false;
 		s_OpenFinal = false;
+		s_SwitchBoard = false;
 		s_CloseMenu = false;
 		s_Refresh = false;
 		s_Debug = false;
 		s_Rows = null;
+	}
+
+	static bool ReadPhase(ParamsReadContext ctx)
+	{
+		bool inMatch;
+		bool debugOn;
+		bool wasMatch;
+
+		if (!ctx.Read(inMatch))
+		{
+			return false;
+		}
+
+		debugOn = false;
+		if (!ctx.Read(debugOn))
+		{
+			debugOn = false;
+		}
+
+		wasMatch = s_InMatch;
+		s_PhaseKnown = true;
+		s_InMatch = inMatch;
+		s_Debug = debugOn;
+		if (inMatch)
+		{
+			if (!wasMatch)
+			{
+				s_OpenFinal = false;
+				s_CloseMenu = true;
+			}
+		}
+
+		if (LogOn())
+		{
+			if (inMatch)
+			{
+				Print("[OMD_DM][UI] phase inMatch=true");
+			}
+			else
+			{
+				Print("[OMD_DM][UI] phase inMatch=false");
+			}
+		}
+
+		return true;
 	}
 
 	static bool LogOn()
@@ -383,6 +477,7 @@ class OMD_DM_BoardClient
 		if (finalSnap)
 		{
 			s_InMatch = false;
+			s_PhaseKnown = true;
 			s_HasFinal = true;
 			s_OpenFinal = true;
 			s_CloseMenu = false;
@@ -390,6 +485,7 @@ class OMD_DM_BoardClient
 		}
 
 		s_InMatch = true;
+		s_PhaseKnown = true;
 		s_OpenFinal = false;
 		s_CloseMenu = true;
 		return true;

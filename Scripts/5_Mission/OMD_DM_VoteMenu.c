@@ -23,9 +23,11 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 	protected Widget m_LevelHost;
 	protected TextWidget m_Timer;
 	protected TextWidget m_Status;
+	protected TextWidget m_VoteLabel;
 	protected ref array<ref OMD_DM_VoteRow> m_ArenaRows;
 	protected ref array<ref OMD_DM_VoteRow> m_LevelRows;
 	protected bool m_Excluded;
+	protected bool m_Focus;
 	protected float m_Second;
 
 	void OMD_DM_VoteMenu()
@@ -33,6 +35,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		m_ArenaRows = new array<ref OMD_DM_VoteRow>();
 		m_LevelRows = new array<ref OMD_DM_VoteRow>();
 		m_Excluded = false;
+		m_Focus = false;
 		m_Second = 0;
 	}
 
@@ -52,6 +55,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		m_LevelHost = layoutRoot.FindAnyWidget("LevelHost");
 		m_Timer = TextWidget.Cast(layoutRoot.FindAnyWidget("TimerText"));
 		m_Status = TextWidget.Cast(layoutRoot.FindAnyWidget("StatusText"));
+		m_VoteLabel = TextWidget.Cast(layoutRoot.FindAnyWidget("VoteLabel"));
 		if (m_ModeBack)
 		{
 			m_ModeBack.SetColor(COLOR_ON);
@@ -92,15 +96,37 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 			return;
 		}
 
-		ui.ShowUICursor(true);
 		GetGame().GetMission().AddActiveInputExcludes({"menu"});
 		m_Excluded = true;
+		KeepCursor();
 	}
 
 	override void OnHide()
 	{
 		DropExcludes();
 		super.OnHide();
+	}
+
+	override void Update(float timeslice)
+	{
+		super.Update(timeslice);
+		KeepCursor();
+	}
+
+	override bool OnKeyDown(Widget w, int x, int y, int key)
+	{
+		if (key == KeyCode.KC_ESCAPE)
+		{
+			OMD_DM_Ui.s_Esc = true;
+			return true;
+		}
+
+		if (key == KeyCode.KC_TAB)
+		{
+			return true;
+		}
+
+		return super.OnKeyDown(w, x, y, key);
 	}
 
 	override bool IsHandlingPlayerDeathEvent()
@@ -141,7 +167,6 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		PaintRows(m_ArenaRows, true, pickArena, "");
 		PaintRows(m_LevelRows, false, 0, pickLevel);
 		SetTimer(OMD_DM_VoteClient.s_Seconds);
-		SetStatus("");
 	}
 
 	void Tick(float timeslice)
@@ -170,7 +195,10 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		super.OnClick(w, x, y, button);
 		if (Hits(m_CloseButton, w))
 		{
-			OMD_DM_VoteClient.s_UserClosed = true;
+			OMD_DM_VoteClient.s_Dismissed = true;
+			OMD_DM_VoteClient.s_WantAuto = false;
+			OMD_DM_VoteClient.s_SwitchVote = false;
+			OMD_DM_Ui.Log("close", "vote", "x");
 			Shutdown();
 			return true;
 		}
@@ -226,6 +254,16 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		levelId = OMD_DM_VoteClient.s_PendingLevel;
 		if (arenaNumber < 1)
 		{
+			arenaNumber = OMD_DM_VoteClient.s_MyArena;
+		}
+
+		if (levelId == "")
+		{
+			levelId = OMD_DM_VoteClient.s_MyLevel;
+		}
+
+		if (arenaNumber < 1)
+		{
 			if (levelId == "")
 			{
 				SetStatus("Выбери арену или уровень");
@@ -269,7 +307,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		if (living)
 		{
 			rpc.Send(player, OMD_DM_Rpc.CHOICE, true, null);
-			SetStatus("Голос отправлен");
+			MarkSent();
 			if (OMD_DM_VoteClient.s_Debug)
 			{
 				Print("[OMD_DM][VOTE] rpc choice arena=" + arenaNumber.ToString() + " level=" + levelId);
@@ -279,7 +317,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		}
 
 		rpc.Send(null, OMD_DM_Rpc.CHOICE, true, null);
-		SetStatus("Нет персонажа, голос отправлен");
+		MarkSent();
 		if (OMD_DM_VoteClient.s_Debug)
 		{
 			Print("[OMD_DM][VOTE] rpc choice no-player arena=" + arenaNumber.ToString() + " level=" + levelId);
@@ -542,6 +580,55 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		m_Status.SetText(text);
 	}
 
+	protected void MarkSent()
+	{
+		SetStatus("Голос принят");
+		if (!m_VoteLabel)
+		{
+			return;
+		}
+
+		m_VoteLabel.SetText("Голос принят");
+	}
+
+	protected void KeepCursor()
+	{
+		UIManager ui;
+
+		if (!m_Excluded)
+		{
+			return;
+		}
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		ui = GetGame().GetUIManager();
+		if (!ui)
+		{
+			return;
+		}
+
+		if (ui.IsCursorVisible())
+		{
+			return;
+		}
+
+		if (!m_Focus)
+		{
+			if (GetGame().GetInput())
+			{
+				GetGame().GetInput().ChangeGameFocus(1, INPUT_DEVICE_MOUSE);
+				GetGame().GetInput().ChangeGameFocus(1, INPUT_DEVICE_KEYBOARD);
+				m_Focus = true;
+			}
+		}
+
+		ui.ShowUICursor(true);
+	}
+
 	protected void DropExcludes()
 	{
 		Mission mission;
@@ -557,9 +644,15 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 			return;
 		}
 
-		if (GetGame().GetUIManager())
+		if (m_Focus)
 		{
-			GetGame().GetUIManager().ShowUICursor(false);
+			if (GetGame().GetInput())
+			{
+				GetGame().GetInput().ChangeGameFocus(-1, INPUT_DEVICE_MOUSE);
+				GetGame().GetInput().ChangeGameFocus(-1, INPUT_DEVICE_KEYBOARD);
+			}
+
+			m_Focus = false;
 		}
 
 		mission = GetGame().GetMission();
