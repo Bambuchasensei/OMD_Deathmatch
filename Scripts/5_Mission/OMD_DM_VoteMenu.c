@@ -103,11 +103,13 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		super.OnHide();
 	}
 
+	override bool IsHandlingPlayerDeathEvent()
+	{
+		return false;
+	}
+
 	override void OnPlayerDeath()
 	{
-		OMD_DM_VoteClient.s_UserClosed = true;
-		DropExcludes();
-		super.OnPlayerDeath();
 	}
 
 	void Shutdown()
@@ -192,7 +194,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 			{
 				OMD_DM_VoteClient.s_PendingArena = row.number;
 				PaintRows(m_ArenaRows, true, row.number, "");
-				SetStatus("");
+				SendChoice(row.number, "");
 			}
 
 			return true;
@@ -206,7 +208,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 			{
 				OMD_DM_VoteClient.s_PendingLevel = row.id;
 				PaintRows(m_LevelRows, false, 0, row.id);
-				SetStatus("");
+				SendChoice(0, row.id);
 			}
 
 			return true;
@@ -219,56 +221,69 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 	{
 		int arenaNumber;
 		string levelId;
-		PlayerBase player;
-		ScriptRPC rpc;
 
 		arenaNumber = OMD_DM_VoteClient.s_PendingArena;
 		levelId = OMD_DM_VoteClient.s_PendingLevel;
 		if (arenaNumber < 1)
 		{
-			arenaNumber = OMD_DM_VoteClient.s_MyArena;
-		}
-
-		if (levelId == "")
-		{
-			levelId = OMD_DM_VoteClient.s_MyLevel;
-		}
-
-		if (arenaNumber < 1)
-		{
-			SetStatus("Выбери арену");
-			return;
-		}
-
-		if (m_LevelRows)
-		{
-			if (m_LevelRows.Count() > 0)
+			if (levelId == "")
 			{
-				if (levelId == "")
-				{
-					SetStatus("Выбери уровень");
-					return;
-				}
+				SetStatus("Выбери арену или уровень");
+				return;
 			}
 		}
 
+		SendChoice(arenaNumber, levelId);
+	}
+
+	protected void SendChoice(int arenaNumber, string levelId)
+	{
+		PlayerBase player;
+		ScriptRPC rpc;
+		bool living;
+
 		if (!GetGame())
 		{
+			SetStatus("Нет игры");
+			if (OMD_DM_VoteClient.s_Debug)
+			{
+				Print("[OMD_DM][VOTE] rpc choice no-game arena=" + arenaNumber.ToString() + " level=" + levelId);
+			}
+
 			return;
 		}
 
-		if (!Class.CastTo(player, GetGame().GetPlayer()))
+		living = false;
+		player = null;
+		if (Class.CastTo(player, GetGame().GetPlayer()))
 		{
-			return;
+			if (player.IsAlive())
+			{
+				living = true;
+			}
 		}
 
-		OMD_DM_VoteClient.s_PendingArena = arenaNumber;
-		OMD_DM_VoteClient.s_PendingLevel = levelId;
 		rpc = new ScriptRPC();
 		rpc.Write(arenaNumber);
 		rpc.Write(levelId);
-		rpc.Send(player, OMD_DM_Rpc.CHOICE, true, null);
-		SetStatus("Голос отправлен");
+		if (living)
+		{
+			rpc.Send(player, OMD_DM_Rpc.CHOICE, true, null);
+			SetStatus("Голос отправлен");
+			if (OMD_DM_VoteClient.s_Debug)
+			{
+				Print("[OMD_DM][VOTE] rpc choice arena=" + arenaNumber.ToString() + " level=" + levelId);
+			}
+
+			return;
+		}
+
+		rpc.Send(null, OMD_DM_Rpc.CHOICE, true, null);
+		SetStatus("Нет персонажа, голос отправлен");
+		if (OMD_DM_VoteClient.s_Debug)
+		{
+			Print("[OMD_DM][VOTE] rpc choice no-player arena=" + arenaNumber.ToString() + " level=" + levelId);
+		}
 	}
 
 	protected void BuildRows(Widget host, array<ref OMD_DM_VoteRow> rows, array<ref OMD_DM_VoteOption> options, bool useNumber)

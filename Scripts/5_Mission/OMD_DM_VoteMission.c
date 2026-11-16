@@ -93,6 +93,21 @@ modded class MissionGameplay
 			}
 		}
 
+		if (!m_OMD_DM_VoteMenu)
+		{
+			if (OMD_DM_VoteClient.s_Active)
+			{
+				if (!OMD_DM_VoteClient.s_UserClosed)
+				{
+					if (!ui.GetMenu())
+					{
+						wantOpen = true;
+						forced = false;
+					}
+				}
+			}
+		}
+
 		if (wantOpen)
 		{
 			if (forced)

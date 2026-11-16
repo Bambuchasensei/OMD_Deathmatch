@@ -30,6 +30,7 @@ class OMD_DM_VoteClient
 	static string s_MyLevel;
 	static int s_PendingArena;
 	static string s_PendingLevel;
+	static bool s_Debug;
 	static ref array<ref OMD_DM_VoteOption> s_Arenas;
 	static ref array<ref OMD_DM_VoteOption> s_Levels;
 
@@ -45,6 +46,7 @@ class OMD_DM_VoteClient
 		s_MyLevel = "";
 		s_PendingArena = 0;
 		s_PendingLevel = "";
+		s_Debug = false;
 		s_Arenas = null;
 		s_Levels = null;
 	}
@@ -74,6 +76,7 @@ class OMD_DM_VoteClient
 		string id;
 		string title;
 		string myLevel;
+		bool debugOn;
 		array<ref OMD_DM_VoteOption> arenas;
 		array<ref OMD_DM_VoteOption> levels;
 		OMD_DM_VoteOption option;
@@ -175,12 +178,19 @@ class OMD_DM_VoteClient
 			return false;
 		}
 
+		debugOn = false;
+		if (!ctx.Read(debugOn))
+		{
+			debugOn = false;
+		}
+
 		Ensure();
 		s_Seconds = seconds;
 		s_Arenas = arenas;
 		s_Levels = levels;
 		s_MyArena = myArena;
 		s_MyLevel = myLevel;
+		s_Debug = debugOn;
 		s_Refresh = true;
 		s_Active = true;
 		s_Close = false;
@@ -190,6 +200,10 @@ class OMD_DM_VoteClient
 			s_UserClosed = false;
 			s_PendingArena = 0;
 			s_PendingLevel = "";
+			if (s_Debug)
+			{
+				Print("[OMD_DM][VOTE] rpc open sec=" + seconds.ToString());
+			}
 		}
 
 		return true;
