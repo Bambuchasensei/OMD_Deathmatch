@@ -265,6 +265,7 @@ class OMD_DM_BoardClient
 	static bool s_OpenFinal;
 	static bool s_CloseMenu;
 	static bool s_Refresh;
+	static bool s_Debug;
 	static ref array<ref OMD_DM_BoardRow> s_Rows;
 
 	static void Reset()
@@ -274,7 +275,23 @@ class OMD_DM_BoardClient
 		s_OpenFinal = false;
 		s_CloseMenu = false;
 		s_Refresh = false;
+		s_Debug = false;
 		s_Rows = null;
+	}
+
+	static bool LogOn()
+	{
+		if (s_Debug)
+		{
+			return true;
+		}
+
+		if (OMD_DM_VoteClient.s_Debug)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	static bool Read(ParamsReadContext ctx, bool finalSnap)
@@ -286,6 +303,7 @@ class OMD_DM_BoardClient
 		int assists;
 		int points;
 		string name;
+		bool debugOn;
 		array<ref OMD_DM_BoardRow> rows;
 		OMD_DM_BoardRow row;
 
@@ -341,8 +359,27 @@ class OMD_DM_BoardClient
 			rows.Insert(row);
 		}
 
+		debugOn = false;
+		if (!ctx.Read(debugOn))
+		{
+			debugOn = false;
+		}
+
 		s_Rows = rows;
 		s_Refresh = true;
+		s_Debug = debugOn;
+		if (LogOn())
+		{
+			if (finalSnap)
+			{
+				Print("[OMD_DM][BOARD] final recv rows=" + count.ToString());
+			}
+			else
+			{
+				Print("[OMD_DM][BOARD] live recv rows=" + count.ToString());
+			}
+		}
+
 		if (finalSnap)
 		{
 			s_InMatch = false;

@@ -314,8 +314,42 @@ class OMD_DM_BoardHud
 
 	void Apply()
 	{
+		TextWidget title;
+		bool empty;
+
+		empty = true;
+		if (OMD_DM_BoardClient.s_Rows)
+		{
+			if (OMD_DM_BoardClient.s_Rows.Count() > 0)
+			{
+				empty = false;
+			}
+		}
+
+		if (m_Root)
+		{
+			title = TextWidget.Cast(m_Root.FindAnyWidget("Title"));
+			if (title)
+			{
+				if (empty)
+				{
+					title.SetText("Загрузка...");
+				}
+				else
+				{
+					title.SetText("Таблица очков");
+				}
+			}
+		}
+
 		if (!m_Lines)
 		{
+			return;
+		}
+
+		if (empty)
+		{
+			m_Lines.Clear();
 			return;
 		}
 

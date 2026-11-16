@@ -7,6 +7,8 @@ modded class MissionGameplay
 	protected ref OMD_DM_BoardMenu m_OMD_DM_BoardMenu;
 	protected ref OMD_DM_BoardHud m_OMD_DM_BoardHud;
 	protected float m_OMD_DM_BoardWait;
+	protected bool m_OMD_DM_BoardHeld;
+	protected bool m_OMD_DM_BoardShown;
 
 	override void OnInit()
 	{
@@ -26,6 +28,8 @@ modded class MissionGameplay
 
 	override void OnMissionFinish()
 	{
+		m_OMD_DM_BoardHeld = false;
+		m_OMD_DM_BoardShown = false;
 		CloseBoard();
 		CloseVoteMenu();
 		OMD_DM_VoteClient.Reset();
@@ -225,7 +229,8 @@ modded class MissionGameplay
 	protected void TickBoard(float timeslice)
 	{
 		UIManager ui;
-		bool held;
+		bool pressed;
+		bool released;
 
 		if (!GetGame())
 		{
@@ -258,25 +263,57 @@ modded class MissionGameplay
 			OpenBoard();
 		}
 
-		held = false;
-		if (m_OMD_DM_BoardKey)
+		pressed = PressedBoard();
+		released = ReleasedBoard();
+		if (pressed)
 		{
-			held = m_OMD_DM_BoardKey.LocalHold();
+			m_OMD_DM_BoardHeld = true;
+			if (OMD_DM_BoardClient.LogOn())
+			{
+				Print("[OMD_DM][BOARD] key down");
+			}
 		}
 
-		if (PressedBoard())
+		if (ui.GetMenu())
 		{
+			m_OMD_DM_BoardHeld = false;
+		}
+
+		if (pressed)
+		{
+			if (m_OMD_DM_BoardHeld)
+			{
+				SendBoardRequest();
+				m_OMD_DM_BoardWait = 0;
+			}
+		}
+
+		if (released)
+		{
+			m_OMD_DM_BoardHeld = false;
+			if (OMD_DM_BoardClient.LogOn())
+			{
+				Print("[OMD_DM][BOARD] key up");
+			}
+
 			if (OMD_DM_BoardClient.s_HasFinal)
 			{
 				if (!OMD_DM_BoardClient.s_InMatch)
 				{
-					OpenBoard();
-					m_OMD_DM_BoardWait = 0;
+					if (!ui.GetMenu())
+					{
+						OpenBoard();
+					}
 				}
 			}
 		}
 
-		if (held)
+		if (ui.GetMenu())
+		{
+			m_OMD_DM_BoardHeld = false;
+		}
+
+		if (m_OMD_DM_BoardHeld)
 		{
 			m_OMD_DM_BoardWait = m_OMD_DM_BoardWait + timeslice;
 			if (m_OMD_DM_BoardWait >= 2)
@@ -285,17 +322,7 @@ modded class MissionGameplay
 				SendBoardRequest();
 			}
 
-			if (OMD_DM_BoardClient.s_InMatch)
-			{
-				if (!m_OMD_DM_BoardMenu)
-				{
-					ShowBoardHud();
-				}
-			}
-			else
-			{
-				HideBoardHud();
-			}
+			ShowBoardHud();
 		}
 		else
 		{
@@ -333,6 +360,16 @@ modded class MissionGameplay
 		return m_OMD_DM_BoardKey.LocalPress();
 	}
 
+	protected bool ReleasedBoard()
+	{
+		if (!m_OMD_DM_BoardKey)
+		{
+			return false;
+		}
+
+		return m_OMD_DM_BoardKey.LocalRelease();
+	}
+
 	protected void SendBoardRequest()
 	{
 		PlayerBase player;
@@ -350,28 +387,30 @@ modded class MissionGameplay
 
 		rpc = new ScriptRPC();
 		rpc.Send(player, OMD_DM_Rpc.BOARD_REQ, true, null);
+		if (OMD_DM_BoardClient.LogOn())
+		{
+			Print("[OMD_DM][BOARD] req sent");
+		}
 	}
 
 	protected void ShowBoardHud()
 	{
-		bool created;
-
-		created = false;
 		if (!m_OMD_DM_BoardHud)
 		{
 			m_OMD_DM_BoardHud = new OMD_DM_BoardHud();
-			created = true;
 		}
 
 		m_OMD_DM_BoardHud.ShowBoard(true);
-		if (created)
+		if (!m_OMD_DM_BoardShown)
 		{
+			m_OMD_DM_BoardShown = true;
 			m_OMD_DM_BoardHud.Apply();
 		}
 	}
 
 	protected void HideBoardHud()
 	{
+		m_OMD_DM_BoardShown = false;
 		if (!m_OMD_DM_BoardHud)
 		{
 			return;
@@ -424,6 +463,7 @@ modded class MissionGameplay
 	protected void CloseBoard()
 	{
 		CloseBoardMenu();
+		m_OMD_DM_BoardShown = false;
 		if (m_OMD_DM_BoardHud)
 		{
 			m_OMD_DM_BoardHud.Destroy();
