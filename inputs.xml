@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<modded_inputs>
+	<inputs>
+		<actions>
+			<input name="UAOMDDMVote" loc="STR_OMD_DM_VOTE" />
+		</actions>
+		<sorting name="OMD_DM" loc="STR_OMD_DM_SORT">
+			<input name="UAOMDDMVote" />
+		</sorting>
+	</inputs>
+	<preset>
+		<input name="UAOMDDMVote">
+			<btn name="kMultiply" />
+		</input>
+	</preset>
+</modded_inputs>

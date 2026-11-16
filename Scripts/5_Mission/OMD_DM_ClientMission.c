@@ -1,1 +1,1 @@
-// Client 5_Mission is empty in phase 0. UI comes later.
+// MissionGameplay vote hook lives in OMD_DM_VoteMission.c, after OMD_DM_VoteMenu.c.

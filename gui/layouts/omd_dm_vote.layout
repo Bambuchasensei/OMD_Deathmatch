@@ -1,0 +1,189 @@
+FrameWidgetClass OMD_DM_VoteRoot {
+ position 0 0
+ size 1 1
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ priority 100
+ {
+  PanelWidgetClass Dim {
+   ignorepointer 0
+   color 0 0 0 0.45
+   position 0 0
+   size 1 1
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+  }
+  PanelWidgetClass Card {
+   ignorepointer 0
+   color 0.07 0.07 0.07 0.96
+   position 0.30 0.08
+   size 0.40 0.84
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+   {
+    ButtonWidgetClass CloseButton {
+     ignorepointer 0
+     position 0.90 0.015
+     size 0.08 0.055
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     {
+      PanelWidgetClass CloseBack {
+       ignorepointer 1
+       color 0.35 0.12 0.12 0.95
+       position 0 0
+       size 1 1
+       style rover_sim_colorable
+      }
+      TextWidgetClass CloseLabel {
+       ignorepointer 1
+       position 0 0
+       size 1 1
+       text "X"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 1 1 1 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+    TextWidgetClass Title {
+     ignorepointer 1
+     position 0.04 0.02
+     size 0.82 0.06
+     text "Голосование"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.95 0.86 0.62 1
+     "text halign" left
+     "text valign" center
+    }
+    TextWidgetClass TimerText {
+     ignorepointer 1
+     position 0.04 0.08
+     size 0.92 0.045
+     text "Осталось 0 сек"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.85 0.85 0.85 1
+     "text halign" left
+     "text valign" center
+    }
+    TextWidgetClass ArenaTitle {
+     ignorepointer 1
+     position 0.04 0.14
+     size 0.92 0.04
+     text "Арена"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 1 1 1 1
+     "text halign" left
+     "text valign" center
+    }
+    PanelWidgetClass ArenaHost {
+     ignorepointer 0
+     position 0.04 0.185
+     size 0.92 0.24
+     color 0 0 0 0
+     clipchildren 1
+    }
+    TextWidgetClass ModeTitle {
+     ignorepointer 1
+     position 0.04 0.44
+     size 0.92 0.04
+     text "Режим"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 1 1 1 1
+     "text halign" left
+     "text valign" center
+    }
+    ButtonWidgetClass ModeButton {
+     ignorepointer 0
+     position 0.04 0.485
+     size 0.92 0.07
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     {
+      PanelWidgetClass ModeBack {
+       ignorepointer 1
+       color 0.78 0.53 0.23 0.96
+       position 0 0
+       size 1 1
+       style rover_sim_colorable
+      }
+      TextWidgetClass ModeLabel {
+       ignorepointer 1
+       position 0.04 0
+       size 0.92 1
+       text "Обычный"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.12 0.08 0.04 1
+       "text halign" left
+       "text valign" center
+      }
+     }
+    }
+    TextWidgetClass LevelTitle {
+     ignorepointer 1
+     position 0.04 0.57
+     size 0.92 0.04
+     text "Уровень"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 1 1 1 1
+     "text halign" left
+     "text valign" center
+    }
+    PanelWidgetClass LevelHost {
+     ignorepointer 0
+     position 0.04 0.615
+     size 0.92 0.20
+     color 0 0 0 0
+     clipchildren 1
+    }
+    TextWidgetClass StatusText {
+     ignorepointer 1
+     position 0.04 0.83
+     size 0.92 0.04
+     text ""
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.95 0.75 0.45 1
+     "text halign" left
+     "text valign" center
+    }
+    ButtonWidgetClass VoteButton {
+     ignorepointer 0
+     position 0.28 0.88
+     size 0.44 0.08
+     {
+      PanelWidgetClass VoteBack {
+       ignorepointer 1
+       color 0.20 0.38 0.22 0.96
+       position 0 0
+       size 1 1
+       style rover_sim_colorable
+      }
+      TextWidgetClass VoteLabel {
+       ignorepointer 1
+       position 0 0
+       size 1 1
+       text "Голосовать"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 1 1 1 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+   }
+  }
+ }
+}

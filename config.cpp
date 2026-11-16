@@ -29,6 +29,7 @@ class CfgMods
 		version = "0.1.0";
 		type = "mod";
 		dependencies[] = { "Game", "World", "Mission" };
+		inputs = "OMD_Deathmatch/inputs.xml";
 		class defs
 		{
 			class gameScriptModule
