@@ -1,15 +1,15 @@
 ButtonWidgetClass ChoiceButton {
  ignorepointer 0
  position 0 0
- size 1 0.3
+ size 1 0.28
  hexactpos 0
  vexactpos 0
  hexactsize 0
  vexactsize 0
  {
-  PanelWidgetClass ChoiceBack {
+  PanelWidgetClass ChoiceBorder {
    ignorepointer 1
-   color 0.16 0.16 0.16 0.96
+   color 0.2039 0.2157 0.1843 1
    position 0 0
    size 1 1
    hexactpos 0
@@ -18,31 +18,50 @@ ButtonWidgetClass ChoiceButton {
    vexactsize 0
    style rover_sim_colorable
   }
-  TextWidgetClass ChoiceLabel {
+  PanelWidgetClass ChoiceBack {
    ignorepointer 1
-   position 0.04 0
-   size 0.68 1
+   color 0.1020 0.1098 0.1020 1
+   position 0.002 0.08
+   size 0.996 0.84
    hexactpos 0
    vexactpos 0
    hexactsize 0
    vexactsize 0
+   style rover_sim_colorable
+  }
+  TextWidgetClass CheckText {
+   ignorepointer 1
+   position 0.02 0
+   size 0.06 1
+   text ""
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.4980 0.6588 0.5373 1
+   "exact text" 1
+   "exact text size" 14
+   "text halign" center
+   "text valign" center
+  }
+  TextWidgetClass ChoiceLabel {
+   ignorepointer 1
+   position 0.10 0
+   size 0.68 1
    text "..."
    font "gui/fonts/sdf_MetronBook24"
-   "text color" 0.95 0.95 0.95 1
+   "text color" 0.9098 0.9098 0.8941 1
+   "exact text" 1
+   "exact text size" 13
    "text halign" left
    "text valign" center
   }
   TextWidgetClass ChoiceCount {
    ignorepointer 1
-   position 0.74 0
-   size 0.22 1
-   hexactpos 0
-   vexactpos 0
-   hexactsize 0
-   vexactsize 0
+   position 0.80 0
+   size 0.16 1
    text "0"
    font "gui/fonts/sdf_MetronBook24"
-   "text color" 0.95 0.95 0.95 1
+   "text color" 0.6039 0.6118 0.5882 1
+   "exact text" 1
+   "exact text size" 14
    "text halign" right
    "text valign" center
   }

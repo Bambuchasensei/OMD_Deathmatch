@@ -9,7 +9,7 @@ FrameWidgetClass OMD_DM_VoteRoot {
  {
   PanelWidgetClass Dim {
    ignorepointer 0
-   color 0 0 0 0.45
+   color 0.0549 0.0588 0.0549 0.55
    position 0 0
    size 1 1
    hexactpos 0
@@ -18,166 +18,272 @@ FrameWidgetClass OMD_DM_VoteRoot {
    vexactsize 0
    style rover_sim_colorable
   }
-  PanelWidgetClass Card {
+  PanelWidgetClass CardFrame {
    ignorepointer 0
-   color 0.07 0.07 0.07 0.96
-   position 0.30 0.08
-   size 0.40 0.84
+   color 0.4196 0.4353 0.4000 1
+   position 0.3125 0.1204
+   size 0.3750 0.7593
    hexactpos 0
    vexactpos 0
    hexactsize 0
    vexactsize 0
    style rover_sim_colorable
    {
-    ButtonWidgetClass CloseButton {
+    PanelWidgetClass Card {
      ignorepointer 0
-     position 0.90 0.015
-     size 0.08 0.055
+     color 0.1020 0.1098 0.1020 0.85
+     position 0.0014 0.0013
+     size 0.9972 0.9974
      hexactpos 0
      vexactpos 0
      hexactsize 0
      vexactsize 0
+     style rover_sim_colorable
      {
-      PanelWidgetClass CloseBack {
+      ButtonWidgetClass CloseButton {
+       ignorepointer 0
+       position 0.92 0.016
+       size 0.05 0.045
+       {
+        TextWidgetClass CloseLabel {
+         ignorepointer 1
+         position 0 0
+         size 1 1
+         text "X"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 16
+         "text halign" center
+         "text valign" center
+        }
+       }
+      }
+      PanelWidgetClass KickerLine {
        ignorepointer 1
-       color 0.35 0.12 0.12 0.95
-       position 0 0
-       size 1 1
+       color 0.7882 0.2510 0.2275 1
+       position 0.028 0.028
+       size 0.056 0.002
        style rover_sim_colorable
       }
-      TextWidgetClass CloseLabel {
+      TextWidgetClass Kicker {
        ignorepointer 1
-       position 0 0
-       size 1 1
-       text "X"
+       position 0.10 0.016
+       size 0.45 0.028
+       text "ЛОББИ"
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 1 1 1 1
-       "text halign" center
-       "text valign" center
-      }
-     }
-    }
-    TextWidgetClass Title {
-     ignorepointer 1
-     position 0.04 0.02
-     size 0.82 0.06
-     text "Голосование"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 0.95 0.86 0.62 1
-     "text halign" left
-     "text valign" center
-    }
-    TextWidgetClass TimerText {
-     ignorepointer 1
-     position 0.04 0.08
-     size 0.92 0.045
-     text "Осталось 0 сек"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 0.85 0.85 0.85 1
-     "text halign" left
-     "text valign" center
-    }
-    TextWidgetClass ArenaTitle {
-     ignorepointer 1
-     position 0.04 0.14
-     size 0.92 0.04
-     text "Арена"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 1 1 1 1
-     "text halign" left
-     "text valign" center
-    }
-    PanelWidgetClass ArenaHost {
-     ignorepointer 0
-     position 0.04 0.185
-     size 0.92 0.24
-     color 0 0 0 0
-     clipchildren 1
-    }
-    TextWidgetClass ModeTitle {
-     ignorepointer 1
-     position 0.04 0.44
-     size 0.92 0.04
-     text "Режим"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 1 1 1 1
-     "text halign" left
-     "text valign" center
-    }
-    ButtonWidgetClass ModeButton {
-     ignorepointer 0
-     position 0.04 0.485
-     size 0.92 0.07
-     hexactpos 0
-     vexactpos 0
-     hexactsize 0
-     vexactsize 0
-     {
-      PanelWidgetClass ModeBack {
-       ignorepointer 1
-       color 0.78 0.53 0.23 0.96
-       position 0 0
-       size 1 1
-       style rover_sim_colorable
-      }
-      TextWidgetClass ModeLabel {
-       ignorepointer 1
-       position 0.04 0
-       size 0.92 1
-       text "Обычный"
-       font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.12 0.08 0.04 1
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
        "text halign" left
        "text valign" center
       }
-     }
-    }
-    TextWidgetClass LevelTitle {
-     ignorepointer 1
-     position 0.04 0.57
-     size 0.92 0.04
-     text "Уровень"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 1 1 1 1
-     "text halign" left
-     "text valign" center
-    }
-    PanelWidgetClass LevelHost {
-     ignorepointer 0
-     position 0.04 0.615
-     size 0.92 0.20
-     color 0 0 0 0
-     clipchildren 1
-    }
-    TextWidgetClass StatusText {
-     ignorepointer 1
-     position 0.04 0.83
-     size 0.92 0.04
-     text ""
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 0.95 0.75 0.45 1
-     "text halign" left
-     "text valign" center
-    }
-    ButtonWidgetClass VoteButton {
-     ignorepointer 0
-     position 0.28 0.88
-     size 0.44 0.08
-     {
-      PanelWidgetClass VoteBack {
+      TextWidgetClass Title {
        ignorepointer 1
-       color 0.20 0.38 0.22 0.96
-       position 0 0
-       size 1 1
+       position 0.028 0.046
+       size 0.55 0.042
+       text "ГОЛОСОВАНИЕ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.9098 0.9098 0.8941 1
+       "exact text" 1
+       "exact text size" 24
+       "bold text" 1
+       "text halign" left
+       "text valign" center
+      }
+      ImageWidgetClass LogoImage {
+       ignorepointer 1
+       visible 0
+       color 1 1 1 1
+       position 0.60 0.020
+       size 0.28 0.052
+       mode blend
+       "src alpha" 1
+      }
+      TextWidgetClass LogoText {
+       ignorepointer 1
+       visible 1
+       position 0.52 0.028
+       size 0.36 0.042
+       text "OMD | ONE MORE DAYZ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.9098 0.9098 0.8941 1
+       "exact text" 1
+       "exact text size" 14
+       "bold text" 1
+       "text halign" right
+       "text valign" center
+      }
+      TextWidgetClass TimerText {
+       ignorepointer 1
+       position 0.028 0.110
+       size 0.55 0.030
+       text "ОСТАЛОСЬ 0:00"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.9098 0.9098 0.8941 1
+       "exact text" 1
+       "exact text size" 13
+       "bold text" 1
+       "text halign" left
+       "text valign" center
+      }
+      TextWidgetClass TimerTotal {
+       ignorepointer 1
+       position 0.50 0.110
+       size 0.472 0.030
+       text ""
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 12
+       "text halign" right
+       "text valign" center
+      }
+      PanelWidgetClass Track {
+       ignorepointer 1
+       color 0.2039 0.2157 0.1843 1
+       position 0.028 0.148
+       size 0.944 0.006
+       style rover_sim_colorable
+       {
+        PanelWidgetClass TrackFill {
+         ignorepointer 1
+         color 0.3725 0.4000 0.3137 1
+         position 0 0
+         size 1 1
+         style rover_sim_colorable
+        }
+       }
+      }
+      TextWidgetClass ArenaTitle {
+       ignorepointer 1
+       position 0.028 0.170
+       size 0.944 0.028
+       text "АРЕНА"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.5412 0.5647 0.4706 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
+       "text halign" left
+       "text valign" center
+      }
+      PanelWidgetClass ArenaHost {
+       ignorepointer 0
+       position 0.028 0.202
+       size 0.944 0.200
+       color 0 0 0 0
+       clipchildren 1
+      }
+      TextWidgetClass ModeTitle {
+       ignorepointer 1
+       position 0.028 0.412
+       size 0.944 0.028
+       text "РЕЖИМ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.5412 0.5647 0.4706 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
+       "text halign" left
+       "text valign" center
+      }
+      ButtonWidgetClass ModeButton {
+       ignorepointer 0
+       position 0.028 0.444
+       size 0.944 0.055
+       {
+        PanelWidgetClass ModeBorder {
+         ignorepointer 1
+         color 0.7882 0.2510 0.2275 1
+         position 0 0
+         size 1 1
+         style rover_sim_colorable
+        }
+        PanelWidgetClass ModeBack {
+         ignorepointer 1
+         color 0.2000 0.1098 0.1020 1
+         position 0.002 0.04
+         size 0.996 0.92
+         style rover_sim_colorable
+        }
+        TextWidgetClass ModeCheck {
+         ignorepointer 1
+         position 0.02 0
+         size 0.06 1
+         text "✓"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.4980 0.6588 0.5373 1
+         "exact text" 1
+         "exact text size" 14
+         "text halign" center
+         "text valign" center
+        }
+        TextWidgetClass ModeLabel {
+         ignorepointer 1
+         position 0.10 0
+         size 0.70 1
+         text "ОБЫЧНЫЙ"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.9098 0.9098 0.8941 1
+         "exact text" 1
+         "exact text size" 13
+         "text halign" left
+         "text valign" center
+        }
+       }
+      }
+      TextWidgetClass LevelTitle {
+       ignorepointer 1
+       position 0.028 0.515
+       size 0.944 0.028
+       text "УРОВЕНЬ СНАРЯЖЕНИЯ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.5412 0.5647 0.4706 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
+       "text halign" left
+       "text valign" center
+      }
+      PanelWidgetClass LevelHost {
+       ignorepointer 0
+       position 0.028 0.548
+       size 0.944 0.280
+       color 0 0 0 0
+       clipchildren 1
+      }
+      PanelWidgetClass Divider {
+       ignorepointer 1
+       color 0.2039 0.2157 0.1843 1
+       position 0.028 0.845
+       size 0.944 0.002
        style rover_sim_colorable
       }
-      TextWidgetClass VoteLabel {
+      TextWidgetClass StatusText {
        ignorepointer 1
-       position 0 0
-       size 1 1
-       text "Голосовать"
+       position 0.028 0.860
+       size 0.944 0.040
+       text ""
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 1 1 1 1
+       "text color" 0.4980 0.6588 0.5373 1
+       "exact text" 1
+       "exact text size" 14
+       "bold text" 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass HintText {
+       ignorepointer 1
+       position 0.028 0.910
+       size 0.944 0.040
+       text "NUM * / ESC — ЗАКРЫТЬ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
        "text halign" center
        "text valign" center
       }

@@ -2,18 +2,27 @@
 class OMD_DM_VoteRow
 {
 	Widget root;
+	Widget border;
 	Widget back;
 	TextWidget label;
 	TextWidget count;
+	TextWidget check;
 	int number;
+	int votes;
 	string id;
 };
 
 class OMD_DM_VoteMenu extends UIScriptedMenu
 {
-	protected static const int COLOR_IDLE = 0xF5282828;
-	protected static const int COLOR_ON = 0xF5C8883A;
+	protected static const int COLOR_IDLE = 0xFF1A1C1A;
+	protected static const int COLOR_IDLE_LINE = 0xFF34372F;
+	protected static const int COLOR_ON = 0xFF331C1A;
+	protected static const int COLOR_ON_LINE = 0xFFC9403A;
+	protected static const int COLOR_TEXT = 0xFFE8E8E4;
+	protected static const int COLOR_MUTED = 0xFF9A9C96;
+	protected static const int COLOR_OK = 0xFF7FA889;
 	protected static const string CHOICE_LAYOUT = "OMD_Deathmatch/gui/layouts/omd_dm_vote_choice.layout";
+	protected static const string MARK = "✓";
 
 	protected Widget m_CloseButton;
 	protected Widget m_VoteButton;
@@ -21,7 +30,9 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 	protected Widget m_ModeBack;
 	protected Widget m_ArenaHost;
 	protected Widget m_LevelHost;
+	protected Widget m_TrackFill;
 	protected TextWidget m_Timer;
+	protected TextWidget m_TimerTotal;
 	protected TextWidget m_Status;
 	protected TextWidget m_VoteLabel;
 	protected ref array<ref OMD_DM_VoteRow> m_ArenaRows;
@@ -29,6 +40,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 	protected bool m_Excluded;
 	protected bool m_Focus;
 	protected float m_Second;
+	protected int m_Window;
 
 	void OMD_DM_VoteMenu()
 	{
@@ -37,6 +49,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		m_Excluded = false;
 		m_Focus = false;
 		m_Second = 0;
+		m_Window = 0;
 	}
 
 	override Widget Init()
@@ -53,9 +66,12 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		m_ModeBack = layoutRoot.FindAnyWidget("ModeBack");
 		m_ArenaHost = layoutRoot.FindAnyWidget("ArenaHost");
 		m_LevelHost = layoutRoot.FindAnyWidget("LevelHost");
+		m_TrackFill = layoutRoot.FindAnyWidget("TrackFill");
 		m_Timer = TextWidget.Cast(layoutRoot.FindAnyWidget("TimerText"));
+		m_TimerTotal = TextWidget.Cast(layoutRoot.FindAnyWidget("TimerTotal"));
 		m_Status = TextWidget.Cast(layoutRoot.FindAnyWidget("StatusText"));
 		m_VoteLabel = TextWidget.Cast(layoutRoot.FindAnyWidget("VoteLabel"));
+		OMD_DM_Logo.Apply(layoutRoot);
 		if (m_ModeBack)
 		{
 			m_ModeBack.SetColor(COLOR_ON);
@@ -150,8 +166,8 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		string pickLevel;
 
 		m_Second = 0;
-		BuildRows(m_ArenaHost, m_ArenaRows, OMD_DM_VoteClient.s_Arenas, true);
-		BuildRows(m_LevelHost, m_LevelRows, OMD_DM_VoteClient.s_Levels, false);
+		BuildRows(m_ArenaHost, m_ArenaRows, OMD_DM_VoteClient.s_Arenas);
+		BuildRows(m_LevelHost, m_LevelRows, OMD_DM_VoteClient.s_Levels);
 		pickArena = OMD_DM_VoteClient.s_PendingArena;
 		pickLevel = OMD_DM_VoteClient.s_PendingLevel;
 		if (pickArena < 1)
@@ -324,7 +340,7 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 		}
 	}
 
-	protected void BuildRows(Widget host, array<ref OMD_DM_VoteRow> rows, array<ref OMD_DM_VoteOption> options, bool useNumber)
+	protected void BuildRows(Widget host, array<ref OMD_DM_VoteRow> rows, array<ref OMD_DM_VoteOption> options)
 	{
 		int i;
 		int count;
@@ -358,9 +374,9 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 
 		slot = 1.0;
 		slot = slot / count;
-		if (slot > 0.34)
+		if (slot > 0.24)
 		{
-			slot = 0.34;
+			slot = 0.24;
 		}
 
 		for (i = 0; i < count; i++)
@@ -374,25 +390,22 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 
 			row = new OMD_DM_VoteRow();
 			row.root = created;
+			row.border = created.FindAnyWidget("ChoiceBorder");
 			row.back = created.FindAnyWidget("ChoiceBack");
 			row.label = TextWidget.Cast(created.FindAnyWidget("ChoiceLabel"));
 			row.count = TextWidget.Cast(created.FindAnyWidget("ChoiceCount"));
+			row.check = TextWidget.Cast(created.FindAnyWidget("CheckText"));
 			row.number = 0;
+			row.votes = 0;
 			row.id = "";
 			if (option)
 			{
 				row.number = option.number;
 				row.id = option.id;
+				row.votes = option.votes;
 				if (row.label)
 				{
-					if (useNumber)
-					{
-						row.label.SetText(option.number.ToString() + ". " + option.title);
-					}
-					else
-					{
-						row.label.SetText(option.title);
-					}
+					row.label.SetText(option.title);
 				}
 
 				if (row.count)
@@ -438,13 +451,28 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 	protected void PaintRows(array<ref OMD_DM_VoteRow> rows, bool byNumber, int number, string id)
 	{
 		int i;
-		int color;
+		int lead;
 		bool selected;
 		OMD_DM_VoteRow row;
 
 		if (!rows)
 		{
 			return;
+		}
+
+		lead = 0;
+		for (i = 0; i < rows.Count(); i++)
+		{
+			row = rows.Get(i);
+			if (!row)
+			{
+				continue;
+			}
+
+			if (row.votes > lead)
+			{
+				lead = row.votes;
+			}
 		}
 
 		for (i = 0; i < rows.Count(); i++)
@@ -474,15 +502,59 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 				}
 			}
 
-			color = COLOR_IDLE;
-			if (selected)
-			{
-				color = COLOR_ON;
-			}
-
 			if (row.back)
 			{
-				row.back.SetColor(color);
+				if (selected)
+				{
+					row.back.SetColor(COLOR_ON);
+				}
+				else
+				{
+					row.back.SetColor(COLOR_IDLE);
+				}
+			}
+
+			if (row.border)
+			{
+				if (selected)
+				{
+					row.border.SetColor(COLOR_ON_LINE);
+				}
+				else
+				{
+					row.border.SetColor(COLOR_IDLE_LINE);
+				}
+			}
+
+			if (row.check)
+			{
+				if (selected)
+				{
+					row.check.SetText(MARK);
+				}
+				else
+				{
+					row.check.SetText("");
+				}
+			}
+
+			if (row.count)
+			{
+				if (row.votes > 0)
+				{
+					if (row.votes == lead)
+					{
+						row.count.SetColor(COLOR_TEXT);
+					}
+					else
+					{
+						row.count.SetColor(COLOR_MUTED);
+					}
+				}
+				else
+				{
+					row.count.SetColor(COLOR_MUTED);
+				}
 			}
 		}
 	}
@@ -562,12 +634,39 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 
 	protected void SetTimer(int seconds)
 	{
-		if (!m_Timer)
+		float ratio;
+
+		if (seconds > m_Window)
+		{
+			m_Window = seconds;
+		}
+
+		if (m_Timer)
+		{
+			m_Timer.SetText("ОСТАЛОСЬ " + OMD_DM_Ui.Clock(seconds));
+		}
+
+		if (m_TimerTotal)
+		{
+			if (m_Window > 0)
+			{
+				m_TimerTotal.SetText("ИЗ " + OMD_DM_Ui.Clock(m_Window));
+			}
+		}
+
+		if (!m_TrackFill)
 		{
 			return;
 		}
 
-		m_Timer.SetText("Осталось " + seconds.ToString() + " сек");
+		ratio = 0;
+		if (m_Window > 0)
+		{
+			ratio = seconds;
+			ratio = ratio / m_Window;
+		}
+
+		m_TrackFill.SetSize(ratio, 1);
 	}
 
 	protected void SetStatus(string text)
@@ -577,18 +676,24 @@ class OMD_DM_VoteMenu extends UIScriptedMenu
 			return;
 		}
 
+		m_Status.SetColor(COLOR_TEXT);
 		m_Status.SetText(text);
 	}
 
 	protected void MarkSent()
 	{
-		SetStatus("Голос принят");
+		if (m_Status)
+		{
+			m_Status.SetColor(COLOR_OK);
+			m_Status.SetText("ГОЛОС ПРИНЯТ " + MARK);
+		}
+
 		if (!m_VoteLabel)
 		{
 			return;
 		}
 
-		m_VoteLabel.SetText("Голос принят");
+		m_VoteLabel.SetText("ГОЛОС ПРИНЯТ");
 	}
 
 	protected void KeepCursor()

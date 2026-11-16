@@ -13,11 +13,41 @@ class OMD_DM_Rpc
 
 class OMD_DM_Ui
 {
+	static const string LOGO_IMAGE = "set:omd_dm image:Lockup";
 	static bool s_Esc;
 
 	static void Reset()
 	{
 		s_Esc = false;
+	}
+
+	static string Clock(int seconds)
+	{
+		int minutes;
+		int rest;
+		string minText;
+		string secText;
+
+		if (seconds < 0)
+		{
+			seconds = 0;
+		}
+
+		minutes = seconds / 60;
+		rest = seconds - (minutes * 60);
+		minText = minutes.ToString();
+		secText = rest.ToString();
+		if (minutes < 10)
+		{
+			minText = "0" + minText;
+		}
+
+		if (rest < 10)
+		{
+			secText = "0" + secText;
+		}
+
+		return minText + ":" + secText;
 	}
 
 	static void Log(string action, string menuName, string reason)
@@ -313,6 +343,8 @@ class OMD_DM_BoardClient
 	static bool s_CloseMenu;
 	static bool s_Refresh;
 	static bool s_Debug;
+	static bool s_TimeKnown;
+	static int s_SecondsLeft;
 	static ref array<ref OMD_DM_BoardRow> s_Rows;
 
 	static void Reset()
@@ -325,6 +357,8 @@ class OMD_DM_BoardClient
 		s_CloseMenu = false;
 		s_Refresh = false;
 		s_Debug = false;
+		s_TimeKnown = false;
+		s_SecondsLeft = 0;
 		s_Rows = null;
 	}
 
@@ -398,6 +432,7 @@ class OMD_DM_BoardClient
 		int points;
 		string name;
 		bool debugOn;
+		int timeLeft;
 		array<ref OMD_DM_BoardRow> rows;
 		OMD_DM_BoardRow row;
 
@@ -459,6 +494,14 @@ class OMD_DM_BoardClient
 			debugOn = false;
 		}
 
+		timeLeft = 0;
+		s_TimeKnown = false;
+		if (ctx.Read(timeLeft))
+		{
+			s_SecondsLeft = timeLeft;
+			s_TimeKnown = true;
+		}
+
 		s_Rows = rows;
 		s_Refresh = true;
 		s_Debug = debugOn;
@@ -470,7 +513,14 @@ class OMD_DM_BoardClient
 			}
 			else
 			{
-				Print("[OMD_DM][BOARD] live recv rows=" + count.ToString());
+				if (s_TimeKnown)
+				{
+					Print("[OMD_DM][BOARD] live recv rows=" + count.ToString() + " time=" + timeLeft.ToString());
+				}
+				else
+				{
+					Print("[OMD_DM][BOARD] live recv rows=" + count.ToString());
+				}
 			}
 		}
 

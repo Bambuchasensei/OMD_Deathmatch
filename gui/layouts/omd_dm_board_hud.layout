@@ -8,107 +8,206 @@ FrameWidgetClass OMD_DM_BoardHudRoot {
  vexactsize 0
  priority 50
  {
-  PanelWidgetClass Board {
+  PanelWidgetClass BoardFrame {
    ignorepointer 1
-   color 0.05 0.05 0.05 0.82
-   position 0.63 0.10
-   size 0.34 0.78
+   color 0.4196 0.4353 0.4000 1
+   position 0.7604 0.0370
+   size 0.2188 0.4630
    hexactpos 0
    vexactpos 0
    hexactsize 0
    vexactsize 0
    style rover_sim_colorable
    {
-    TextWidgetClass Title {
+    PanelWidgetClass Board {
      ignorepointer 1
-     position 0.04 0.02
-     size 0.92 0.06
-     text "Таблица очков"
-     font "gui/fonts/sdf_MetronBook24"
-     "text color" 0.95 0.86 0.62 1
-     "text halign" left
-     "text valign" center
-    }
-    PanelWidgetClass Head {
-     ignorepointer 1
-     position 0.03 0.09
-     size 0.94 0.045
-     color 0 0 0 0
+     color 0.1020 0.1098 0.1020 0.85
+     position 0.0024 0.0020
+     size 0.9952 0.9960
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style rover_sim_colorable
      {
-      TextWidgetClass HeadPlace {
+      PanelWidgetClass KickerLine {
        ignorepointer 1
-       position 0.01 0
-       size 0.07 1
-       text "#"
-       font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
-       "text halign" center
-       "text valign" center
+       color 0.7882 0.2510 0.2275 1
+       position 0.048 0.055
+       size 0.095 0.004
+       style rover_sim_colorable
       }
-      TextWidgetClass HeadName {
+      TextWidgetClass Kicker {
        ignorepointer 1
-       position 0.09 0
-       size 0.33 1
-       text "Имя"
+       position 0.16 0.040
+       size 0.40 0.045
+       text "МАТЧ"
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
        "text halign" left
        "text valign" center
       }
-      TextWidgetClass HeadKills {
+      TextWidgetClass Title {
        ignorepointer 1
-       position 0.42 0
-       size 0.14 1
-       text "Убийства"
+       position 0.048 0.090
+       size 0.46 0.055
+       text "ТАБЛИЦА ОЧКОВ"
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
-       "text halign" center
+       "text color" 0.9098 0.9098 0.8941 1
+       "exact text" 1
+       "exact text size" 18
+       "bold text" 1
+       "text halign" left
        "text valign" center
       }
-      TextWidgetClass HeadDeaths {
+      TextWidgetClass HintText {
        ignorepointer 1
-       position 0.56 0
-       size 0.14 1
-       text "Смерти"
+       position 0.52 0.040
+       size 0.43 0.040
+       text "NUM - ЗАКРЫТЬ"
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
-       "text halign" center
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 12
+       "bold text" 1
+       "text halign" right
        "text valign" center
       }
-      TextWidgetClass HeadAssists {
+      TextWidgetClass MatchTime {
        ignorepointer 1
-       position 0.70 0
-       size 0.14 1
-       text "Ассисты"
+       position 0.52 0.085
+       size 0.43 0.055
+       text ""
        font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
-       "text halign" center
+       "text color" 0.9098 0.9098 0.8941 1
+       "exact text" 1
+       "exact text size" 20
+       "bold text" 1
+       "text halign" right
        "text valign" center
       }
-      TextWidgetClass HeadPoints {
+      PanelWidgetClass Divider {
        ignorepointer 1
-       position 0.84 0
-       size 0.15 1
-       text "Очки"
-       font "gui/fonts/sdf_MetronBook24"
-       "text color" 0.70 0.70 0.70 1
-       "text halign" center
-       "text valign" center
+       color 0.2039 0.2157 0.1843 1
+       position 0.048 0.165
+       size 0.904 0.003
+       style rover_sim_colorable
       }
-     }
-    }
-    PanelWidgetClass Clip {
-     ignorepointer 1
-     position 0.03 0.14
-     size 0.94 0.82
-     color 0 0 0 0
-     clipchildren 1
-     {
-      PanelWidgetClass ListHost {
+      PanelWidgetClass Head {
        ignorepointer 1
-       position 0 0
-       size 1 1
+       position 0.048 0.185
+       size 0.904 0.045
        color 0 0 0 0
+       {
+        TextWidgetClass HeadPlace {
+         ignorepointer 1
+         position 0.030 0
+         size 0.058 1
+         text "#"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" right
+         "text valign" center
+        }
+        TextWidgetClass HeadName {
+         ignorepointer 1
+         position 0.108 0
+         size 0.420 1
+         text "ИГРОК"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" left
+         "text valign" center
+        }
+        TextWidgetClass HeadKills {
+         ignorepointer 1
+         position 0.548 0
+         size 0.084 1
+         text "У"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" right
+         "text valign" center
+        }
+        TextWidgetClass HeadDeaths {
+         ignorepointer 1
+         position 0.652 0
+         size 0.084 1
+         text "С"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" right
+         "text valign" center
+        }
+        TextWidgetClass HeadAssists {
+         ignorepointer 1
+         position 0.756 0
+         size 0.084 1
+         text "А"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" right
+         "text valign" center
+        }
+        TextWidgetClass HeadPoints {
+         ignorepointer 1
+         position 0.860 0
+         size 0.130 1
+         text "ОЧКИ"
+         font "gui/fonts/sdf_MetronBook24"
+         "text color" 0.6039 0.6118 0.5882 1
+         "exact text" 1
+         "exact text size" 11
+         "bold text" 1
+         "text halign" right
+         "text valign" center
+        }
+       }
+      }
+      PanelWidgetClass Clip {
+       ignorepointer 1
+       position 0.048 0.240
+       size 0.904 0.680
+       color 0 0 0 0
+       clipchildren 1
+       {
+        PanelWidgetClass ListHost {
+         ignorepointer 1
+         position 0 0
+         size 1 1
+         color 0 0 0 0
+        }
+       }
+      }
+      TextWidgetClass Legend {
+       ignorepointer 1
+       position 0.048 0.935
+       size 0.904 0.045
+       text "У — УБИЙСТВА    С — СМЕРТИ    А — АССИСТЫ"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.6039 0.6118 0.5882 1
+       "exact text" 1
+       "exact text size" 11
+       "text halign" left
+       "text valign" center
       }
      }
     }

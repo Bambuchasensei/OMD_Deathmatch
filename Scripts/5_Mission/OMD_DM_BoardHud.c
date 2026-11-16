@@ -1,8 +1,45 @@
 #ifndef SERVER
+class OMD_DM_Logo
+{
+	static void Apply(Widget root)
+	{
+		ImageWidget logo;
+		TextWidget fallback;
+		bool loaded;
+
+		if (!root)
+		{
+			return;
+		}
+
+		logo = ImageWidget.Cast(root.FindAnyWidget("LogoImage"));
+		fallback = TextWidget.Cast(root.FindAnyWidget("LogoText"));
+		loaded = false;
+		if (logo)
+		{
+			loaded = logo.LoadImageFile(0, OMD_DM_Ui.LOGO_IMAGE);
+			logo.Show(loaded);
+		}
+
+		if (fallback)
+		{
+			if (loaded)
+			{
+				fallback.Show(false);
+			}
+			else
+			{
+				fallback.Show(true);
+			}
+		}
+	}
+};
+
 class OMD_DM_BoardLine
 {
 	Widget root;
 	Widget back;
+	Widget bar;
 	TextWidget place;
 	TextWidget name;
 	TextWidget kills;
@@ -14,17 +51,16 @@ class OMD_DM_BoardLine
 class OMD_DM_BoardLines
 {
 	protected static const string ROW_LAYOUT = "OMD_Deathmatch/gui/layouts/omd_dm_board_row.layout";
-	protected static const int COLOR_1 = 0xFFFFE08A;
-	protected static const int COLOR_2 = 0xFFE6E6E6;
-	protected static const int COLOR_3 = 0xFFE0A060;
-	protected static const int COLOR_N = 0xFFF2F2F2;
-	protected static const int COLOR_BACK_1 = 0x663A3018;
-	protected static const int COLOR_BACK_2 = 0x442E2E2E;
-	protected static const int COLOR_BACK_3 = 0x66382A18;
-	protected static const int COLOR_BACK_N = 0x00000000;
+	protected static const int COLOR_TEXT = 0xFFE8E8E4;
+	protected static const int COLOR_NEG = 0xFFD9A441;
+	protected static const int COLOR_OWN = 0xFF242724;
+	protected static const int COLOR_BAR = 0xFFC9403A;
+	protected static const int COLOR_CLEAR = 0x00000000;
 
 	protected Widget m_Host;
 	protected ref array<ref OMD_DM_BoardLine> m_Lines;
+	protected string m_LocalName;
+	protected bool m_Compact;
 
 	void OMD_DM_BoardLines(Widget host)
 	{
@@ -59,19 +95,21 @@ class OMD_DM_BoardLines
 		m_Lines.Clear();
 	}
 
-	void ShowRows(float fixedSlot)
+	void ShowRows(int maxRows, bool compact)
 	{
 		int i;
 		int count;
 		int shown;
 		float slot;
 		float y;
-		float denom;
+		float hostH;
 		Widget created;
 		OMD_DM_BoardRow data;
 		OMD_DM_BoardLine line;
 
 		Clear();
+		m_Compact = compact;
+		CacheLocal();
 		if (!m_Host)
 		{
 			return;
@@ -94,11 +132,11 @@ class OMD_DM_BoardLines
 
 		count = OMD_DM_BoardClient.s_Rows.Count();
 		shown = count;
-		if (fixedSlot > 0)
+		if (maxRows > 0)
 		{
-			if (count > 3)
+			if (count > maxRows)
 			{
-				shown = 3;
+				shown = maxRows;
 			}
 		}
 
@@ -107,15 +145,16 @@ class OMD_DM_BoardLines
 			return;
 		}
 
-		if (fixedSlot > 0)
+		if (compact)
 		{
-			slot = fixedSlot;
+			slot = 0.1;
 		}
 		else
 		{
-			denom = shown;
-			m_Host.SetSize(1, denom * 0.085);
-			slot = 1.0 / denom;
+			hostH = shown;
+			hostH = hostH * 0.09;
+			m_Host.SetSize(1, hostH);
+			slot = 1.0 / shown;
 		}
 
 		for (i = 0; i < shown; i++)
@@ -130,16 +169,18 @@ class OMD_DM_BoardLines
 			line = new OMD_DM_BoardLine();
 			line.root = created;
 			line.back = created.FindAnyWidget("RowBack");
+			line.bar = created.FindAnyWidget("OwnBar");
 			line.place = TextWidget.Cast(created.FindAnyWidget("PlaceText"));
 			line.name = TextWidget.Cast(created.FindAnyWidget("NameText"));
 			line.kills = TextWidget.Cast(created.FindAnyWidget("KillText"));
 			line.deaths = TextWidget.Cast(created.FindAnyWidget("DeathText"));
 			line.assists = TextWidget.Cast(created.FindAnyWidget("AssistText"));
 			line.points = TextWidget.Cast(created.FindAnyWidget("PointText"));
+			ApplyColumns(line);
 			FillLine(line, data, i);
 			y = i * slot;
 			created.SetPos(0, y);
-			created.SetSize(1, slot * 0.92);
+			created.SetSize(1, slot * 0.88);
 			m_Lines.Insert(line);
 		}
 	}
@@ -147,7 +188,6 @@ class OMD_DM_BoardLines
 	protected void FillLine(OMD_DM_BoardLine line, OMD_DM_BoardRow data, int index)
 	{
 		int placeNum;
-		int color;
 		string playerName;
 		int kills;
 		int deaths;
@@ -204,16 +244,42 @@ class OMD_DM_BoardLines
 			line.points.SetText(points.ToString());
 		}
 
-		color = RankColor(index);
-		PaintText(line.place, color);
-		PaintText(line.name, color);
-		PaintText(line.kills, color);
-		PaintText(line.deaths, color);
-		PaintText(line.assists, color);
-		PaintText(line.points, color);
+		PaintText(line.place, COLOR_TEXT);
+		PaintText(line.name, COLOR_TEXT);
+		PaintText(line.kills, COLOR_TEXT);
+		PaintText(line.deaths, COLOR_TEXT);
+		PaintText(line.assists, COLOR_TEXT);
+		if (points < 0)
+		{
+			PaintText(line.points, COLOR_NEG);
+		}
+		else
+		{
+			PaintText(line.points, COLOR_TEXT);
+		}
+
 		if (line.back)
 		{
-			line.back.SetColor(RankBack(index));
+			if (IsOwn(playerName))
+			{
+				line.back.SetColor(COLOR_OWN);
+			}
+			else
+			{
+				line.back.SetColor(COLOR_CLEAR);
+			}
+		}
+
+		if (line.bar)
+		{
+			if (IsOwn(playerName))
+			{
+				line.bar.SetColor(COLOR_BAR);
+			}
+			else
+			{
+				line.bar.SetColor(COLOR_CLEAR);
+			}
 		}
 	}
 
@@ -225,46 +291,93 @@ class OMD_DM_BoardLines
 		}
 
 		widget.SetColor(color);
+		if (m_Compact)
+		{
+			widget.SetTextExactSize(13);
+		}
+		else
+		{
+			widget.SetTextExactSize(14);
+		}
 	}
 
-	protected int RankColor(int index)
+	protected bool IsOwn(string playerName)
 	{
-		if (index == 0)
+		if (m_LocalName == "")
 		{
-			return COLOR_1;
+			return false;
 		}
 
-		if (index == 1)
+		if (playerName == m_LocalName)
 		{
-			return COLOR_2;
+			return true;
 		}
 
-		if (index == 2)
-		{
-			return COLOR_3;
-		}
-
-		return COLOR_N;
+		return false;
 	}
 
-	protected int RankBack(int index)
+	protected void CacheLocal()
 	{
-		if (index == 0)
+		PlayerBase player;
+		PlayerIdentity identity;
+
+		m_LocalName = "";
+		if (!GetGame())
 		{
-			return COLOR_BACK_1;
+			return;
 		}
 
-		if (index == 1)
+		if (!Class.CastTo(player, GetGame().GetPlayer()))
 		{
-			return COLOR_BACK_2;
+			return;
 		}
 
-		if (index == 2)
+		identity = player.GetIdentity();
+		if (!identity)
 		{
-			return COLOR_BACK_3;
+			return;
 		}
 
-		return COLOR_BACK_N;
+		m_LocalName = identity.GetName();
+	}
+
+	protected void ApplyColumns(OMD_DM_BoardLine line)
+	{
+		if (!line)
+		{
+			return;
+		}
+
+		if (m_Compact)
+		{
+			Move(line.bar, 0.000, 0.006, 0.20, 0.60);
+			Move(line.place, 0.030, 0.058, 0, 1);
+			Move(line.name, 0.108, 0.420, 0, 1);
+			Move(line.kills, 0.548, 0.084, 0, 1);
+			Move(line.deaths, 0.652, 0.084, 0, 1);
+			Move(line.assists, 0.756, 0.084, 0, 1);
+			Move(line.points, 0.860, 0.130, 0, 1);
+			return;
+		}
+
+		Move(line.bar, 0.000, 0.006, 0.20, 0.60);
+		Move(line.place, 0.018, 0.040, 0, 1);
+		Move(line.name, 0.070, 0.430, 0, 1);
+		Move(line.kills, 0.520, 0.110, 0, 1);
+		Move(line.deaths, 0.640, 0.100, 0, 1);
+		Move(line.assists, 0.750, 0.100, 0, 1);
+		Move(line.points, 0.860, 0.130, 0, 1);
+	}
+
+	protected void Move(Widget widget, float x, float wdt, float y, float hgt)
+	{
+		if (!widget)
+		{
+			return;
+		}
+
+		widget.SetPos(x, y);
+		widget.SetSize(wdt, hgt);
 	}
 };
 
@@ -314,7 +427,8 @@ class OMD_DM_BoardHud
 
 	void Apply()
 	{
-		TextWidget title;
+		TextWidget hint;
+		TextWidget clock;
 		bool empty;
 
 		empty = true;
@@ -328,16 +442,29 @@ class OMD_DM_BoardHud
 
 		if (m_Root)
 		{
-			title = TextWidget.Cast(m_Root.FindAnyWidget("Title"));
-			if (title)
+			hint = TextWidget.Cast(m_Root.FindAnyWidget("HintText"));
+			clock = TextWidget.Cast(m_Root.FindAnyWidget("MatchTime"));
+			if (hint)
 			{
 				if (empty)
 				{
-					title.SetText("Загрузка...");
+					hint.SetText("ЗАГРУЗКА");
 				}
 				else
 				{
-					title.SetText("Таблица очков");
+					hint.SetText("NUM - ЗАКРЫТЬ");
+				}
+			}
+
+			if (clock)
+			{
+				if (OMD_DM_BoardClient.s_TimeKnown)
+				{
+					clock.SetText(OMD_DM_Ui.Clock(OMD_DM_BoardClient.s_SecondsLeft));
+				}
+				else
+				{
+					clock.SetText("");
 				}
 			}
 		}
@@ -353,7 +480,7 @@ class OMD_DM_BoardHud
 			return;
 		}
 
-		m_Lines.ShowRows(0.0);
+		m_Lines.ShowRows(10, true);
 	}
 
 	void Destroy()

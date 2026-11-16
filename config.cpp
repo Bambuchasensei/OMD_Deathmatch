@@ -32,6 +32,10 @@ class CfgMods
 		inputs = "OMD_Deathmatch/inputs.xml";
 		class defs
 		{
+			class imageSets
+			{
+				files[] = { "OMD_Deathmatch/gui/imagesets/omd_dm.imageset" };
+			};
 			class gameScriptModule
 			{
 				value = "";
