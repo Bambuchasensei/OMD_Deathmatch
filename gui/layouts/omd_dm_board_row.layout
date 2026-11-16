@@ -1,0 +1,82 @@
+PanelWidgetClass BoardRow {
+ ignorepointer 1
+ position 0 0
+ size 1 0.08
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ {
+  PanelWidgetClass RowBack {
+   ignorepointer 1
+   color 0 0 0 0
+   position 0 0
+   size 1 1
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+  }
+  TextWidgetClass PlaceText {
+   ignorepointer 1
+   position 0.01 0
+   size 0.07 1
+   text "1"
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" center
+   "text valign" center
+  }
+  TextWidgetClass NameText {
+   ignorepointer 1
+   position 0.09 0
+   size 0.33 1
+   text "..."
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" left
+   "text valign" center
+  }
+  TextWidgetClass KillText {
+   ignorepointer 1
+   position 0.42 0
+   size 0.14 1
+   text "0"
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" center
+   "text valign" center
+  }
+  TextWidgetClass DeathText {
+   ignorepointer 1
+   position 0.56 0
+   size 0.14 1
+   text "0"
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" center
+   "text valign" center
+  }
+  TextWidgetClass AssistText {
+   ignorepointer 1
+   position 0.70 0
+   size 0.14 1
+   text "0"
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" center
+   "text valign" center
+  }
+  TextWidgetClass PointText {
+   ignorepointer 1
+   position 0.84 0
+   size 0.15 1
+   text "0"
+   font "gui/fonts/sdf_MetronBook24"
+   "text color" 0.95 0.95 0.95 1
+   "text halign" center
+   "text valign" center
+  }
+ }
+}

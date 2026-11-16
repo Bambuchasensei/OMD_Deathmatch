@@ -3,14 +3,19 @@
 	<inputs>
 		<actions>
 			<input name="UAOMDDMVote" loc="STR_OMD_DM_VOTE" />
+			<input name="UAOMDDMScoreboard" loc="STR_OMD_DM_BOARD" />
 		</actions>
 		<sorting name="OMD_DM" loc="STR_OMD_DM_SORT">
 			<input name="UAOMDDMVote" />
+			<input name="UAOMDDMScoreboard" />
 		</sorting>
 	</inputs>
 	<preset>
 		<input name="UAOMDDMVote">
 			<btn name="kMultiply" />
+		</input>
+		<input name="UAOMDDMScoreboard">
+			<btn name="kSubstract" />
 		</input>
 	</preset>
 </modded_inputs>

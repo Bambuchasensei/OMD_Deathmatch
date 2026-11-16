@@ -4,6 +4,10 @@ class OMD_DM_Rpc
 	static const int CHOICE = 77821012;
 	static const int COUNT = 77821013;
 	static const int RESULT = 77821014;
+	static const int BOARD_REQ = 77821015;
+	static const int BOARD_LIVE = 77821016;
+	static const int BOARD_FINAL = 77821017;
+	static const int BOARD_MAX = 64;
 };
 
 class OMD_DM_VoteOption
@@ -227,6 +231,116 @@ class OMD_DM_VoteClient
 		s_PendingLevel = "";
 		s_MyArena = 0;
 		s_MyLevel = "";
+		return true;
+	}
+};
+
+class OMD_DM_BoardRow
+{
+	string name;
+	int kills;
+	int deaths;
+	int assists;
+	int points;
+};
+
+class OMD_DM_BoardClient
+{
+	static bool s_InMatch;
+	static bool s_HasFinal;
+	static bool s_OpenFinal;
+	static bool s_CloseMenu;
+	static bool s_Refresh;
+	static ref array<ref OMD_DM_BoardRow> s_Rows;
+
+	static void Reset()
+	{
+		s_InMatch = false;
+		s_HasFinal = false;
+		s_OpenFinal = false;
+		s_CloseMenu = false;
+		s_Refresh = false;
+		s_Rows = null;
+	}
+
+	static bool Read(ParamsReadContext ctx, bool finalSnap)
+	{
+		int count;
+		int i;
+		int kills;
+		int deaths;
+		int assists;
+		int points;
+		string name;
+		array<ref OMD_DM_BoardRow> rows;
+		OMD_DM_BoardRow row;
+
+		if (!ctx.Read(count))
+		{
+			return false;
+		}
+
+		if (count < 0)
+		{
+			return false;
+		}
+
+		if (count > OMD_DM_Rpc.BOARD_MAX)
+		{
+			return false;
+		}
+
+		rows = new array<ref OMD_DM_BoardRow>();
+		for (i = 0; i < count; i++)
+		{
+			if (!ctx.Read(name))
+			{
+				return false;
+			}
+
+			if (!ctx.Read(kills))
+			{
+				return false;
+			}
+
+			if (!ctx.Read(deaths))
+			{
+				return false;
+			}
+
+			if (!ctx.Read(assists))
+			{
+				return false;
+			}
+
+			if (!ctx.Read(points))
+			{
+				return false;
+			}
+
+			row = new OMD_DM_BoardRow();
+			row.name = name;
+			row.kills = kills;
+			row.deaths = deaths;
+			row.assists = assists;
+			row.points = points;
+			rows.Insert(row);
+		}
+
+		s_Rows = rows;
+		s_Refresh = true;
+		if (finalSnap)
+		{
+			s_InMatch = false;
+			s_HasFinal = true;
+			s_OpenFinal = true;
+			s_CloseMenu = false;
+			return true;
+		}
+
+		s_InMatch = true;
+		s_OpenFinal = false;
+		s_CloseMenu = true;
 		return true;
 	}
 };

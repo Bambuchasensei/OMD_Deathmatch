@@ -1,0 +1,209 @@
+FrameWidgetClass OMD_DM_BoardMenuRoot {
+ ignorepointer 0
+ position 0 0
+ size 1 1
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ priority 100
+ {
+  PanelWidgetClass Dim {
+   ignorepointer 0
+   color 0 0 0 0.45
+   position 0 0
+   size 1 1
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+  }
+  PanelWidgetClass Card {
+   ignorepointer 0
+   color 0.07 0.07 0.07 0.96
+   position 0.18 0.06
+   size 0.64 0.88
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+   {
+    ButtonWidgetClass CloseButton {
+     ignorepointer 0
+     position 0.91 0.015
+     size 0.07 0.05
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     {
+      PanelWidgetClass CloseBack {
+       ignorepointer 1
+       color 0.35 0.12 0.12 0.95
+       position 0 0
+       size 1 1
+       style rover_sim_colorable
+      }
+      TextWidgetClass CloseLabel {
+       ignorepointer 1
+       position 0 0
+       size 1 1
+       text "X"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 1 1 1 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+    TextWidgetClass Title {
+     ignorepointer 1
+     position 0.04 0.018
+     size 0.82 0.05
+     text "Таблица очков"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.95 0.86 0.62 1
+     "text halign" left
+     "text valign" center
+    }
+    TextWidgetClass TopTitle {
+     ignorepointer 1
+     position 0.04 0.075
+     size 0.92 0.035
+     text "Лучшие"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.85 0.85 0.85 1
+     "text halign" left
+     "text valign" center
+    }
+    PanelWidgetClass TopHost {
+     ignorepointer 1
+     position 0.04 0.115
+     size 0.92 0.18
+     color 0 0 0 0
+    }
+    TextWidgetClass AllTitle {
+     ignorepointer 1
+     position 0.04 0.305
+     size 0.92 0.035
+     text "Все игроки"
+     font "gui/fonts/sdf_MetronBook24"
+     "text color" 0.85 0.85 0.85 1
+     "text halign" left
+     "text valign" center
+    }
+    PanelWidgetClass Head {
+     ignorepointer 1
+     position 0.04 0.345
+     size 0.92 0.04
+     color 0 0 0 0
+     {
+      TextWidgetClass HeadPlace {
+       ignorepointer 1
+       position 0.01 0
+       size 0.07 1
+       text "#"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass HeadName {
+       ignorepointer 1
+       position 0.09 0
+       size 0.33 1
+       text "Имя"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" left
+       "text valign" center
+      }
+      TextWidgetClass HeadKills {
+       ignorepointer 1
+       position 0.42 0
+       size 0.14 1
+       text "Убийства"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass HeadDeaths {
+       ignorepointer 1
+       position 0.56 0
+       size 0.14 1
+       text "Смерти"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass HeadAssists {
+       ignorepointer 1
+       position 0.70 0
+       size 0.14 1
+       text "Ассисты"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass HeadPoints {
+       ignorepointer 1
+       position 0.84 0
+       size 0.15 1
+       text "Очки"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 0.70 0.70 0.70 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+    ScrollWidgetClass ListScroll {
+     ignorepointer 0
+     position 0.04 0.39
+     size 0.92 0.46
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     {
+      PanelWidgetClass ListHost {
+       ignorepointer 1
+       position 0 0
+       size 1 1
+       color 0 0 0 0
+      }
+     }
+    }
+    ButtonWidgetClass VoteButton {
+     ignorepointer 0
+     position 0.28 0.88
+     size 0.44 0.08
+     {
+      PanelWidgetClass VoteBack {
+       ignorepointer 1
+       color 0.16 0.16 0.16 0.96
+       position 0 0
+       size 1 1
+       style rover_sim_colorable
+      }
+      TextWidgetClass VoteLabel {
+       ignorepointer 1
+       position 0 0
+       size 1 1
+       text "Голосование"
+       font "gui/fonts/sdf_MetronBook24"
+       "text color" 1 1 1 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+   }
+  }
+ }
+}
